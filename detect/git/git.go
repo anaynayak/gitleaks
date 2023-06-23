@@ -18,6 +18,7 @@ var ErrEncountered bool
 // GitLog returns a channel of gitdiff.File objects from the
 // git log -p command for the given source.
 var quotedOptPattern = regexp.MustCompile(`^(?:"[^"]+"|'[^']+')$`)
+
 func GitLog(source string, logOpts string) (<-chan *gitdiff.File, error) {
 	sourceClean := filepath.Clean(source)
 	var cmd *exec.Cmd
@@ -71,9 +72,9 @@ func GitLog(source string, logOpts string) (<-chan *gitdiff.File, error) {
 func GitDiff(source string, staged bool) (<-chan *gitdiff.File, error) {
 	sourceClean := filepath.Clean(source)
 	var cmd *exec.Cmd
-	cmd = exec.Command("git", "-C", sourceClean, "diff", "-U0", ".")
+	cmd = exec.Command("git", "-C", sourceClean, "diff", "--no-ext-diff", "-U0", ".")
 	if staged {
-		cmd = exec.Command("git", "-C", sourceClean, "diff", "-U0",
+		cmd = exec.Command("git", "-C", sourceClean, "diff", "--no-ext-diff", "-U0",
 			"--staged", ".")
 	}
 	log.Debug().Msgf("executing: %s", cmd.String())
